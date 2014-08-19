@@ -1,4 +1,4 @@
-#jQuery Include
+#jQuery ItemSearch
 A jQuery plugin for adding generic item-searching functionality to a search form.
 
 ## Getting started
@@ -10,7 +10,7 @@ Full API and examples are available on the [wiki](//github.com/lokothodida/jquer
 ## License
 *jQuery ItemSearch* is licensed under [MIT](http://www.opensource.org/licenses/MIT).
 
-# Credit
+## Credit
 * [jQuery](//jquery.com)
 
 ## Copright
