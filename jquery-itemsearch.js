@@ -2,8 +2,8 @@
 * Title          jQuery ItemSearch
 * Description    A jQuery plugin for adding generic item-searching functionality to a search form.
 * Author         Lawrence Okoth-Odida
-* Version        0.1
-* Date           04/08/2014
+* Version        0.1.1
+* Date           19/08/2014
 * Documentation  https://github.com/lokothodida/jquery-itemsearch/wiki/
 */
 (function($) {
@@ -64,7 +64,7 @@ $.fn.itemSearch = function(options) {
   var buildResultsPage = function(results) {
     var html = '';
 
-    if (results) {
+    if (results.length) {
       $.each(results, function(key, result)  { 
         html += settings.displayResult(result);
       });
@@ -72,7 +72,7 @@ $.fn.itemSearch = function(options) {
       html = $('<div/>').append($('<p/>').append(settings.noResult)).html();
     }
 
-    if (settings.pagination) {
+    if (settings.pagination && results.length) {
       html = buildPaginatedResults(html);
     }
 
@@ -131,25 +131,35 @@ $.fn.itemSearch = function(options) {
   return this.each(function() {
     var $form = buildSearchForm();
     
-    var bindToSubmit = function(e) {
+    var bindToSubmit = function(eventParams) {
       if (settings.waiting) {
         settings.resultsContainer.html(settings.waiting);
       }
 
-      var params = $.extend(getParamsFromRegisteredElements(), settings.params);
-      var service = new settings.service(params || {});
-      var query   = $form.find('.' + selectors.query).val();
-      var results = service.performQuery(query);
-      var html    = buildResultsPage(results);
+      if (eventParams && eventParams.results) {
+        // someone is triggering setResults()
+        var html    = buildResultsPage(eventParams.results);
+        settings.resultsContainer.html(html);
+      } else {
+        var params  = $.extend(getParamsFromRegisteredElements(), settings.params);
+        var service = new settings.service($.extend({ form: $form }, (params || {})));
+        var query   = $form.find('.' + selectors.query).val();
+        var results = service.performQuery(query);
+        var html    = buildResultsPage(results);
 
-      settings.resultsContainer.html(html);
+        if (results !== false) {
+          // if results is a boolean, we are waiting for asynchronous data
+          settings.resultsContainer.html(html);
+        }
+      }
 
-      e.preventDefault();
+      return false;
     };
 
     // now bind search functionality to the form elements
     $form.on('click', '.' + selectors.button, bindToSubmit);
 
+    // bind functionality to hitting ENTER (keyCode #13 is the ENTER button)
     $form.on('keydown', 'input', function(e) {
       if (e.keyCode === 13) {
         // done so that users can simply use on('submitItemSearchForm' ....) for
@@ -158,9 +168,13 @@ $.fn.itemSearch = function(options) {
       }
     });
 
-    $form.on('submitItemSearchForm', 'input', function(e) {
-      bindToSubmit(e);
+    $form.on('submitItemSearchForm', 'input', function() {
+      bindToSubmit();
     });
+
+    $form.setResults = function(results) {
+      bindToSubmit({ results: results });
+    };
 
     $form.on('submit', bindToSubmit);
 
