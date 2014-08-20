@@ -2,7 +2,7 @@
 * Title          jQuery ItemSearch
 * Description    A jQuery plugin for adding generic item-searching functionality to a search form.
 * Author         Lawrence Okoth-Odida
-* Version        0.1.1
+* Version        0.1.2
 * Date           19/08/2014
 * Documentation  https://github.com/lokothodida/jquery-itemsearch/wiki/
 */
@@ -165,6 +165,8 @@ $.fn.itemSearch = function(options) {
         // done so that users can simply use on('submitItemSearchForm' ....) for
         // their elements defined in registeredElements literal
         $(this).trigger('submitItemSearchForm');
+
+        return false;
       }
     });
 
