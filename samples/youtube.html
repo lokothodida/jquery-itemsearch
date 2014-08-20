@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <script src="https://code.jquery.com/jquery-1.11.1.js" type="text/javascript"></script>
+    <script src="../jquery-itemsearch.js" type="text/javascript"></script>
+    <script src="js/youtube.service.js" type="text/javascript"></script>
+    <title>jQuery ItemSearch - YouTube Example</title>
+  </head>
+  <body>
+    <h1>jQuery ItemSearch - YouTube Example</h1>
+    <div id="itemsearch-form"></div>
+    <div id="itemsearch-results"></div>
+    <script>
+      $(document).ready(function() {
+        // set your YouTube Search V3 API Key
+        YouTubeSearchService.setKey(/* */);
+
+        $('#itemsearch-form').itemSearch({
+          service: YouTubeSearchService,
+          resultsContainer: $('#itemsearch-results'),
+        });
+      });
+    </script>
+  </body>
+</html>
