@@ -1,13 +1,14 @@
 /**
- * YouTube Search (API V3) service object
- * @package     jQuery itemSearch
- * @subpackage  YouTubeSearchService
+ * jQuery itemSearch Service Object
+ * YouTubeSearchService (YouTube Search API V3)
+ * Version 0.2
  */
 var YouTubeSearchService = function(options) {
   var options = $.extend({}, options);
   var key     = this.key;
   var params  = options.params || {};
   var url     = 'https://www.googleapis.com/youtube/v3/search';
+  var $form   = options.form;
 
   /**
    * Fills in default settings for search query parameters
@@ -46,35 +47,36 @@ var YouTubeSearchService = function(options) {
 
   /**
    * Run query using search term and query parameters
-   * @param  {String}             term
-   * @return {Array{PlainObject}} results of query
+   * @param  {String}  term
+   * @return {Boolean} false, as this is an asynchronous request
    */
-  this.performQuery = function(searchTerm) {
+  this.performQuery = function(term) {
+    console.log(term);
     // with no API key, an error should be shown
     if (!key) {
-      var errorMessage = 'No YouTube API Key provided';
-      alert(errorMessage);
-      console.log(errorMessage);
+      alert('No YouTube API Key provided');
     }
 
     var results = [];
 
+    // get the data
     $.ajax({
       url: url,
-      data: prepareQueryParams({q: searchTerm}),
+      data: prepareQueryParams({q: term}),
       dataType: 'json',
-      async: false,
       success: function(json) {
-        if (json.items.length > 0) {
-          // go through each result, formatting them for VideoSearch
+        if (json.items.length) {
           $.each(json.items, function(key, item) {
             formatResult(item, results);
           });
         }
+      },
+      complete: function() {
+        $form.setResults(results);
       }
     });
 
-    return results;
+    return false;
   };
 };
 
@@ -85,5 +87,5 @@ var YouTubeSearchService = function(options) {
  */
 YouTubeSearchService.setKey = function(apiKey) {
   YouTubeSearchService.prototype.key = apiKey;
-  return YouTubeSearchService.prototype.key == key;
+  return YouTubeSearchService.prototype.key == apiKey;
 };
